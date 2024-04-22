@@ -27,7 +27,6 @@
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
 
 extern "Rust" {
     fn my_demo_function(a: u32) -> u32;
@@ -36,6 +35,8 @@ extern "Rust" {
 
 mod Foo {
     // No `extern` equals `extern "Rust"`.
+    #[link_name = "my_demo_function"] 
+    #[link_name = "my_demo_function_alias"] 
     fn my_demo_function(a: u32) -> u32 {
         a
     }

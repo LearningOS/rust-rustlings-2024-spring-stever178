@@ -40,7 +40,8 @@ mod my_module {
                 Command::Trim => output.push(string.trim().to_string()),
                 Command::Append(num) => {
                     let s: String = "bar".repeat(*num);
-                    output.push(string.clone() + (&s))               
+                    let ss: String = string.clone() + &s;
+                    output.push(ss);               
                 },
             }
         }

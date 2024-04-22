@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -22,6 +21,7 @@ impl<T> Node<T> {
         }
     }
 }
+
 #[derive(Debug)]
 struct LinkedList<T> {
     length: u32,
@@ -35,7 +35,7 @@ impl<T> Default for LinkedList<T> {
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -72,11 +72,38 @@ impl<T> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+		// Self {
+        //     length: 0,
+        //     start: None,
+        //     end: None,
+        // }
+        let mut list_c = LinkedList::<T>::new();
+        let mut node_a = list_a.start;
+        let mut node_b = list_b.start;
+        while node_a.is_some() && node_b.is_some() {
+            let node_a_ptr = node_a.unwrap();
+            let node_b_ptr = node_b.unwrap();
+
+            if unsafe { (*node_a_ptr.as_ptr()).val } < unsafe { (*node_b_ptr.as_ptr()).val } {
+                list_c.add(unsafe { (*node_a_ptr.as_ptr()).val });
+                node_a = unsafe { (*node_a_ptr.as_ptr()).next };
+            }
+            else {
+                list_c.add(unsafe { (*node_b_ptr.as_ptr()).val });
+                node_b = unsafe { (*node_b_ptr.as_ptr()).next };
+            }
         }
+        while node_a.is_some() {
+            let node_a_ptr = node_a.unwrap();
+            list_c.add(unsafe { (*node_a_ptr.as_ptr()).val });
+            node_a = unsafe { (*node_a_ptr.as_ptr()).next };
+        }
+        while node_b.is_some() {
+            let node_b_ptr = node_b.unwrap();
+            list_c.add(unsafe { (*node_b_ptr.as_ptr()).val });
+            node_b = unsafe { (*node_b_ptr.as_ptr()).next };
+        }
+        list_c
 	}
 }
 
