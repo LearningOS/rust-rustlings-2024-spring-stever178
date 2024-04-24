@@ -27,13 +27,14 @@ struct LinkedList<T> {
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
-impl<T> Default for LinkedList<T> {
+
+impl<T: std::cmp::PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -67,9 +68,9 @@ impl<T> LinkedList<T> {
             },
         }
     }
-}
+// }
 
-impl<T: std::cmp::PartialOrd> LinkedList<T> {
+// impl<T: std::cmp::PartialOrd> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
