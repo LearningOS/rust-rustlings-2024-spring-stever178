@@ -12,7 +12,6 @@ struct Node<T> {
     val: T,
     next: Option<NonNull<Node<T>>>,
 }
-
 impl<T> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
@@ -28,7 +27,6 @@ struct LinkedList<T> {
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
-
 impl<T> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
@@ -42,6 +40,18 @@ impl<T> LinkedList<T> {
             start: None,
             end: None,
         }
+    }
+
+    pub fn add(&mut self, obj: T) {
+        let mut node = Box::new(Node::new(obj));
+        node.next = None;
+        let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
+        match self.end {
+            None => self.start = node_ptr,
+            Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+        }
+        self.end = node_ptr;
+        self.length += 1;
     }
 
     pub fn get(&mut self, index: i32) -> Option<&T> {
@@ -59,20 +69,15 @@ impl<T> LinkedList<T> {
     }
 }
 
-impl<T: PartialOrd> LinkedList<T> {
-    pub fn add(&mut self, obj: T) {
-        let mut node = Box::new(Node::new(obj));
-        node.next = None;
-        let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
-        match self.end {
-            None => self.start = node_ptr,
-            Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
-        }
-        self.end = node_ptr;
-        self.length += 1;
-    }
-
-    pub fn merge(list_a: Self, list_b: Self) -> Self {
+impl<T: std::cmp::PartialOrd> LinkedList<T> {
+	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	{
+		//TODO
+		// Self {
+        //     length: 0,
+        //     start: None,
+        //     end: None,
+        // }
         let mut merged_list = Self::new();
         let (mut current_a, mut current_b) = (list_a.start, list_b.start);
 
@@ -103,7 +108,7 @@ impl<T: PartialOrd> LinkedList<T> {
         }
 
         merged_list
-    }
+	}
 }
 
 impl<T> Display for LinkedList<T>
