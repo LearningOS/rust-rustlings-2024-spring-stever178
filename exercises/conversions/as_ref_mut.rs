@@ -27,7 +27,6 @@ fn char_counter<T: AsRef<str>>(arg: T) -> usize {
 // fn num_sq<T: AsMut<u32> + DerefMut<Target = u32>>(arg: &mut T) {
 //     *arg.as_mut() *= *arg.as_mut();
 // }
-
 fn num_sq<T: AsMut<u32>>(arg: &mut T) {
     // *arg.as_ref() *= *arg.as_ref();
     // TODO: Implement the function body.

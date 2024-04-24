@@ -35,25 +35,13 @@ impl<T> Default for LinkedList<T> {
     }
 }
 
-impl<T: std::cmp::PartialOrd> LinkedList<T> {
+impl<T> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
             start: None,
             end: None,
         }
-    }
-
-    pub fn add(&mut self, obj: T) {
-        let mut node = Box::new(Node::new(obj));
-        node.next = None;
-        let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
-        match self.end {
-            None => self.start = node_ptr,
-            Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
-        }
-        self.end = node_ptr;
-        self.length += 1;
     }
 
     pub fn get(&mut self, index: i32) -> Option<&T> {
@@ -69,42 +57,53 @@ impl<T: std::cmp::PartialOrd> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		// Self {
-        //     length: 0,
-        //     start: None,
-        //     end: None,
-        // }
-        let mut list_c = LinkedList::<T>::new();
-        let mut node_a = list_a.start;
-        let mut node_b = list_b.start;
-        while node_a.is_some() && node_b.is_some() {
-            let node_a_ptr = node_a.unwrap();
-            let node_b_ptr = node_b.unwrap();
+}
 
-            if unsafe { (*node_a_ptr.as_ptr()).val } < unsafe { (*node_b_ptr.as_ptr()).val } {
-                list_c.add(unsafe { (*node_a_ptr.as_ptr()).val });
-                node_a = unsafe { (*node_a_ptr.as_ptr()).next };
+impl<T: PartialOrd> LinkedList<T> {
+    pub fn add(&mut self, obj: T) {
+        let mut node = Box::new(Node::new(obj));
+        node.next = None;
+        let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
+        match self.end {
+            None => self.start = node_ptr,
+            Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+        }
+        self.end = node_ptr;
+        self.length += 1;
+    }
+
+    pub fn merge(list_a: Self, list_b: Self) -> Self {
+        let mut merged_list = Self::new();
+        let (mut current_a, mut current_b) = (list_a.start, list_b.start);
+
+        while let (Some(a), Some(b)) = (current_a, current_b) {
+            unsafe {
+                if a.as_ref().val < b.as_ref().val {
+                    merged_list.add(unsafe { Box::from_raw(a.as_ptr()).val });
+                    current_a = a.as_ref().next;
+                } else {
+                    merged_list.add(unsafe { Box::from_raw(b.as_ptr()).val });
+                    current_b = b.as_ref().next;
+                }
             }
-            else {
-                list_c.add(unsafe { (*node_b_ptr.as_ptr()).val });
-                node_b = unsafe { (*node_b_ptr.as_ptr()).next };
-            }
         }
-        while node_a.is_some() {
-            let node_a_ptr = node_a.unwrap();
-            list_c.add(unsafe { (*node_a_ptr.as_ptr()).val });
-            node_a = unsafe { (*node_a_ptr.as_ptr()).next };
+
+        // Add the remaining elements from list_a, if any
+        let mut current = current_a;
+        while let Some(node) = current {
+            merged_list.add(unsafe { Box::from_raw(node.as_ptr()).val });
+            current = unsafe{ node.as_ref().next};
         }
-        while node_b.is_some() {
-            let node_b_ptr = node_b.unwrap();
-            list_c.add(unsafe { (*node_b_ptr.as_ptr()).val });
-            node_b = unsafe { (*node_b_ptr.as_ptr()).next };
+
+        // Add the remaining elements from list_b, if any
+        let mut current = current_b;
+        while let Some(node) = current {
+            merged_list.add(unsafe { Box::from_raw(node.as_ptr()).val });
+            current = unsafe {node.as_ref().next};
         }
-        list_c
-	}
+
+        merged_list
+    }
 }
 
 impl<T> Display for LinkedList<T>

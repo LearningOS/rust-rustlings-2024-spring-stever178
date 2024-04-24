@@ -28,16 +28,17 @@ impl Graph {
     fn bfs_with_return(&self, start: usize) -> Vec<usize> {
 		//TODO
         // let mut visit_order = vec![];
-        let mut visited = vec![false; self.adj.len()];
         let mut visit_order = Vec::new();
-        let mut queue = VecDeque::new();
-
-        queue.push_back(start);
+        
+        let mut visited = vec![false; self.adj.len()];
         visited[start] = true;
+        
+        let mut queue = VecDeque::new();
+        queue.push_back(start);
 
-        while let Some(node) = queue.pop_front() {
-            visit_order.push(node);
-            for neighbor in &self.adj[node] {
+        while let Some(front) = queue.pop_front() {
+            visit_order.push(front);
+            for neighbor in &self.adj[front] {
                 if !visited[*neighbor] {
                     queue.push_back(*neighbor);
                     visited[*neighbor] = true;
@@ -98,4 +99,3 @@ mod tests {
         assert_eq!(visited_order, vec![0]);
     }
 }
-

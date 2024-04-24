@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,6 +37,34 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.items.push(value);
+        self.count += 1;
+        self.sift_up(self.count);// - 1);
+    }
+
+    // 上滤操作，恢复堆的有序性
+    fn sift_up(&mut self, mut idx: usize) {
+        while idx > 1 && (self.comparator)(&self.items[idx], &self.items[self.parent_idx(idx)]) {
+            self.swap(idx, self.parent_idx(idx));
+            idx = self.parent_idx(idx);
+        }
+    }
+
+    // 下滤操作，恢复堆的有序性
+    fn sift_down(&mut self, mut idx: usize) {
+        while self.children_present(idx) {
+            let smallest = self.smallest_child_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[smallest]) {
+                break;
+            }
+            self.swap(idx, smallest);
+            idx = smallest;
+        }
+    }
+
+    // 交换堆中的两个元素
+    fn swap(&mut self, i: usize, j: usize) {
+        self.items.swap(i, j);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -56,9 +83,16 @@ where
         self.left_child_idx(idx) + 1
     }
 
+    // 找到较小的（或较大的，取决于堆的类型）子节点索引
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+
+        if right <= self.count && (self.comparator)(&self.items[right], &self.items[left]) {
+            right
+        } else {
+            left
+        }
     }
 }
 
@@ -85,7 +119,30 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        // if self.is_empty() {
+        //     None
+        // } else {
+        //     self.items.swap(0, self.count - 1);
+        //     self.count -= 1;
+        //     self.heapify_down(0);
+        //     Some(self.items.pop().unwrap())
+        // }
+
+        if self.is_empty() {
+            None
+        } else {
+            // 将堆顶元素与最后一个元素交换位置
+            self.swap(1, self.count);
+            // 从堆中移除最后一个元素（即原来的堆顶元素）
+            let item = self.items.pop();
+            // 更新堆的大小
+            self.count -= 1;
+            // 重新调整堆顶元素以下的部分以保持堆的有序性
+            if !self.is_empty() {
+                self.sift_down(1);
+            }
+            item
+        }
     }
 }
 
