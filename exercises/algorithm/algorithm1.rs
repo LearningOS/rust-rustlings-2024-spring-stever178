@@ -28,13 +28,15 @@ struct LinkedList<T> {
     end: Option<Link<T>>,
 }
 
-impl<T: std::cmp::PartialOrd + Clone> Default for LinkedList<T> {
+// impl<T: std::cmp::PartialOrd + Clone> Default for LinkedList<T> {
+impl<T> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
+// impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
+impl<T> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -68,8 +70,26 @@ impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
             },
         }
     }
-    
-    pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self {
+
+    pub fn merge(mut list_a: LinkedList<i32>, mut list_b: LinkedList<i32>) -> LinkedList<i32> {
+        let mut merged_list = LinkedList::new();
+        while list_a.start.is_some() || list_b.start.is_some() {
+            unsafe {
+                if list_b.start.is_none() || 
+                        (list_a.start.is_some() && 
+                            list_a.start.unwrap().as_ref().val < list_b.start.unwrap().as_ref().val) {
+                    merged_list.add(list_a.start.unwrap().as_ref().val);
+                    list_a.start = list_a.start.unwrap().as_ref().next;
+                } else {
+                    merged_list.add(list_b.start.unwrap().as_ref().val);
+                    list_b.start = list_b.start.unwrap().as_ref().next;
+                }
+            }
+        }
+        merged_list
+    }
+
+    pub fn lsj_merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self {
         //TODO
         let mut list_res = LinkedList::new();
         let mut node_a = list_a.start;

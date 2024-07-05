@@ -47,6 +47,23 @@ where
         BinarySearchTree { root: None }
     }
 
+    // Search for a value in the BST
+    fn search(&self, value: T) -> bool {
+        //TODO
+        self.root.as_ref().and_then(|node| {
+            let mut current: Option<&Box<TreeNode<T>>> = Some(node);
+            while let Some(ref n) = current {
+                match value.cmp(&n.value) {
+                    Ordering::Less => current = n.left.as_ref(), 
+                    Ordering::Greater => current = n.right.as_ref(), //as_deref(),
+                    Ordering::Equal => return Some(true),
+                }
+            }
+            None
+
+        }).is_some()
+    }
+
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
@@ -58,25 +75,6 @@ where
                 self.root = Some(Box::new(TreeNode::new(value)));
             }
         }
-    }
-
-    // Search for a value in the BST
-    fn search(&self, value: T) -> bool {
-        //TODO
-        self.root.as_ref().and_then(|node| {
-            let mut current = Some(node);
-
-            while let Some(ref n) = current {
-                match value.cmp(&n.value) {
-                    Ordering::Less => current = n.left.as_ref(), 
-                    Ordering::Greater => current = n.right.as_ref(), //as_deref(),
-                    Ordering::Equal => return Some(true),
-                }
-            }
-
-            None
-        }).is_some()
-
     }
 }
 
